@@ -7,22 +7,22 @@ import ShopPage from "./pages/shop/shop.component";
 import Header from "./components/header/header.component";
 import SignInAndSignUpPage from "./pages/sign-in-sign-up/sign-in-sign-up.component";
 
-import { auth } from './firebase/firebase.utils'
+import { auth } from "./firebase/firebase.utils";
 
 class App extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
     this.state = {
-      currentUser: null
-    }
+      currentUser: null,
+    };
   }
-  unsubscribeFormAuth = null
+  unsubscribeFormAuth = null;
   componentDidMount() {
-    this.unsubscribeFormAuth = auth.onAuthStateChanged(user => {
-      this.setState({ currentUser: user })
-      console.log(user)
-    })
+    this.unsubscribeFormAuth = auth.onAuthStateChanged((user) => {
+      this.setState({ currentUser: user });
+      console.log(user);
+    });
   }
   componentWillUnmount() {
     this.unsubscribeFormAuth();
@@ -30,16 +30,15 @@ class App extends Component {
   render() {
     return (
       <div>
-        <Header />
+        <Header currentUser={this.state.currentUser} />
         <Switch>
           <Route exact path="/" component={HomePage} />
           <Route path="/shop" component={ShopPage} />
-          <Route path="/sigin" component={SignInAndSignUpPage} />
+          <Route path="/signin" component={SignInAndSignUpPage} />
         </Switch>
-      </div >
-    )
+      </div>
+    );
   }
-
 }
 
 export default App;
