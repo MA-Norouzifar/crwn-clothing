@@ -21,7 +21,7 @@ class SignUp extends Component {
     event.preventDefault();
     const { displayName, email, password, confirmpassword } = this.state;
 
-    if (password != confirmpassword) {
+    if (password !== confirmpassword) {
       alert("password don't match");
       return;
     }
@@ -38,7 +38,7 @@ class SignUp extends Component {
         confirmpassword: "",
       });
     } catch (error) {
-      Console.error(error);
+      console.error(error);
     }
   };
 
