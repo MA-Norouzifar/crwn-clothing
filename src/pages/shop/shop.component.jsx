@@ -1,32 +1,14 @@
-import React, { Component } from 'react'
+import React from "react";
+import {Route} from 'react-router-dom'
+import CollectionOverView from "../../components/collections-overview/collections-overview.comonent";
+import CollectionPage from '../collection/collection.component'
+//Note: Route in App.js automaticaly passes those three object in to our component as prompts
+//we get match, location and history and we want match because we want to display path
+const ShopPage = ({ match }) => (
+  <div className="shop-page">
+    <Route exact path={`${match.path}`} component={CollectionOverView} />
+    <Route path={`${match.path}/:collectionId`} component={CollectionPage} />
+  </div>
+);
 
-import CollectionPreview from '../../components/collection-preview/collection-preview'
-
-import SHOP_DATA from './shop.data'
-
-class ShopPage extends Component {
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            collections: SHOP_DATA
-
-        }
-    }
-
-    render() {
-        const { collections } = this.state
-        return (
-            <div className='shop-page'>
-                {
-                    collections.map(({ id, ...otherCollectionProps }) => (
-                        <CollectionPreview key={id} {...otherCollectionProps} />
-                    ))
-                }
-
-            </div>
-        )
-    }
-}
-
-export default ShopPage
+export default ShopPage;
