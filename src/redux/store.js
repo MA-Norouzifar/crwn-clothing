@@ -1,8 +1,9 @@
 import { createStore, applyMiddleware, compose } from "redux";
-import { persistStore } from 'redux-persist'
+import { persistStore } from "redux-persist";
 import logger from "redux-logger";
 
 import rootReducer from "./root-reducer";
+import { NULL } from "node-sass";
 
 const middlewares = [logger];
 const composeEnhancers =
@@ -12,13 +13,16 @@ const composeEnhancers =
       })
     : compose;
 
-const enhancer = composeEnhancers(
-  applyMiddleware(...middlewares)
-  // other store enhancers if any
-);
+let enhancer = NULL;
 
+if (process.env.NODE_ENV === "development") {
+  enhancer = composeEnhancers(
+    applyMiddleware(...middlewares)
+    // other store enhancers if any
+  );
+}
 export const store = createStore(rootReducer, enhancer);
 
-export const persistor=persistStore(store)
+export const persistor = persistStore(store);
 
-export default {store, persistor};
+export default { store, persistor };
