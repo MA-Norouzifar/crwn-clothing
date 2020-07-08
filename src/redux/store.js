@@ -12,15 +12,15 @@ const composeEnhancers =
       })
     : compose;
 
-let enhancer = null;
-
 if (process.env.NODE_ENV === "development") {
   middlewares.push(logger);
-  enhancer = composeEnhancers(
-    applyMiddleware(...middlewares)
-    // other store enhancers if any
-  );
 }
+
+const enhancer = composeEnhancers(
+  applyMiddleware(...middlewares)
+  // other store enhancers if any
+);
+
 export const store = createStore(rootReducer, enhancer);
 
 export const persistor = persistStore(store);
