@@ -3,9 +3,8 @@ import { persistStore } from "redux-persist";
 import logger from "redux-logger";
 
 import rootReducer from "./root-reducer";
-import { NULL } from "node-sass";
 
-const middlewares = [logger];
+const middlewares = [];
 const composeEnhancers =
   typeof window === "object" && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
@@ -13,9 +12,10 @@ const composeEnhancers =
       })
     : compose;
 
-let enhancer = NULL;
+let enhancer = null;
 
 if (process.env.NODE_ENV === "development") {
+  middlewares.push(logger);
   enhancer = composeEnhancers(
     applyMiddleware(...middlewares)
     // other store enhancers if any
