@@ -11,31 +11,66 @@ import {
 
 import { updateCollections } from "../../redux/shop/shop.actions";
 
+import WithSpinner from "../../components/with-spinner/with-spinner.component";
+
+const CollectionOverViewWithSpinner = WithSpinner(CollectionsOverview);
+const CollectionPageWithSpinner = WithSpinner(CollectionPage);
+
 class ShopPage extends React.Component {
+  state = {
+    loading: true,
+  };
+
   unsubscribeFromSnapsshop = null;
 
   componentDidMount() {
     const { updateCollections } = this.props;
     const collectionRef = firestore.collection("collections");
-    this.unsubscribeFromSnapsshop = collectionRef.onSnapshot(
-      async (snapshop) => {
-        //console.log({'snapshop':snapshop});
-        const collectionMap = convertcollectionsnapshotToMap(snapshop);
-        //console.log(collectionMap);
-        updateCollections(collectionMap);
-      }
-    );
+    // permise pattern
+
+    collectionRef.get().then((snapshop) => {
+      //console.log({'snapshop':snapshop});
+      const collectionMap = convertcollectionsnapshotToMap(snapshop);
+      //console.log(collectionMap);
+      updateCollections(collectionMap);
+      this.setState({ loading: false });
+    });
+
+    //observable pattern
+    // this.unsubscribeFromSnapsshop = collectionRef.onSnapshot(
+    //   async (snapshop) => {
+    //     //console.log({'snapshop':snapshop});
+    //     const collectionMap = convertcollectionsnapshotToMap(snapshop);
+    //     //console.log(collectionMap);
+    //     updateCollections(collectionMap);
+    //     this.setState({ loading: false });
+    //   }
+    // );
   }
 
   render() {
     const { match } = this.props;
+    const { loading } = this.state;
     return (
       <div className="shop-page">
-        <Route exact path={`${match.path}`} component={CollectionsOverview} />
+        <Route
+          exact
+          path={`${match.path}`}
+          render={(props) => (
+            <CollectionOverViewWithSpinner isLoading={loading} {...props} />
+          )}
+        />
+        {/* <Route exact path={`${match.path}`} component={CollectionsOverview} /> */}
         <Route
           path={`${match.path}/:collectionId`}
-          component={CollectionPage}
+          render={(props) => (
+            <CollectionPageWithSpinner isLoading={loading} {...props} />
+          )}
         />
+        {/* <Route
+          path={`${match.path}/:collectionId`}
+          component={CollectionPage}
+        /> */}
       </div>
     );
   }
