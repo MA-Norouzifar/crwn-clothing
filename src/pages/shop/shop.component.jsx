@@ -1,14 +1,132 @@
 import React from "react";
-import {Route} from 'react-router-dom'
-import CollectionOverView from "../../components/collections-overview/collections-overview.comonent";
-import CollectionPage from '../collection/collection.component'
-//Note: Route in App.js automaticaly passes those three object in to our component as prompts
-//we get match, location and history and we want match because we want to display path
-const ShopPage = ({ match }) => (
-  <div className="shop-page">
-    <Route exact path={`${match.path}`} component={CollectionOverView} />
-    <Route path={`${match.path}/:collectionId`} component={CollectionPage} />
-  </div>
-);
+import { Route } from "react-router-dom";
+import { connect } from "react-redux";
+// import { createStructuredSelector } from "reselect";
+// import CollectionsOverview from "../../components/collections-overview/collections-overview.component";
+// import CollectionPage from "../collection/collection.component";
+import CollectionPageContainer from "../collection/collection.container";
+//selectIsCollectionsLoaded == some times when we select a collection
+// and refresh a page we get a error 'title' not define
+//because defualt value is null for colection for this reasone  we create new selector
+// we can use UNSAFE_componentWillMount() to but is unsafe
+// import {
+//   selectIsCollectionFetching,
+//   selectIsCollectionsLoaded,
+// } from "../../redux/shop/shop.selectors";
+// import {
+//   firestore,
+//   convertcollectionsnapshotToMap,
+// } from "../../firebase/firebase.utils";
 
-export default ShopPage;
+//import { updateCollections } from "../../redux/shop/shop.actions";
+import { fetchCollectionsAsync } from "../../redux/shop/shop.actions";
+
+// import WithSpinner from "../../components/with-spinner/with-spinner.component";
+
+import CollectionsOverviewContainer from "../../components/collections-overview/collections-overview.container";
+
+// const CollectionOverViewWithSpinner = WithSpinner(CollectionsOverview);
+// const CollectionPageWithSpinner = WithSpinner(CollectionPage);
+
+class ShopPage extends React.Component {
+  // UNSAFE_componentWillMount(){
+
+  // }
+  // state = {
+  //   loading: true,
+  // };
+
+  // unsubscribeFromSnapsshop = null;
+
+  componentDidMount() {
+    //Redux Thunk
+    const { fetchCollectionsAsync } = this.props;
+    fetchCollectionsAsync();
+    // const { updateCollections } = this.props;
+    // const collectionRef = firestore.collection("collections");
+    //rest API
+    // fetch(
+    //   "https://firestore.googleapis.com/v1/projects/crwn-db-a5591/databases/(default)/documents/connections"
+    // )
+    //   .then((respone) => respone.json())
+    //   .then((collections) => console.log(collections));
+    // permise pattern
+    // collectionRef.get().then((snapshop) => {
+    //   //console.log({'snapshop':snapshop});
+    //   const collectionMap = convertcollectionsnapshotToMap(snapshop);
+    //   //console.log(collectionMap);
+    //   updateCollections(collectionMap);
+    //   this.setState({ loading: false });
+    // });
+    //observable pattern
+    // this.unsubscribeFromSnapsshop = collectionRef.onSnapshot(
+    //   async (snapshop) => {
+    //     //console.log({'snapshop':snapshop});
+    //     const collectionMap = convertcollectionsnapshotToMap(snapshop);
+    //     //console.log(collectionMap);
+    //     updateCollections(collectionMap);
+    //     this.setState({ loading: false });
+    //   }
+    // );
+  }
+
+  render() {
+    const { match } = this.props;
+    // const { match, isCollectionFetching, isCollectionsLoaded } = this.props;
+    //const { loading } = this.state;
+    return (
+      <div className="shop-page">
+        <Route
+          exact
+          path={`${match.path}`}
+          component={CollectionsOverviewContainer}
+        />
+        {/* <Route
+          exact
+          path={`${match.path}`}
+          render={(props) => (
+            <CollectionOverViewWithSpinner
+              isLoading={isCollectionFetching}
+              {...props}
+            />
+            // <CollectionOverViewWithSpinner isLoading={loading} {...props} />
+          )}
+        /> */}
+        {/* <Route exact path={`${match.path}`} component={CollectionsOverview} /> */}
+        <Route
+          path={`${match.path}/:collectionId`}
+          component={CollectionPageContainer}
+          
+        />
+        {/* <Route
+          path={`${match.path}/:collectionId`}
+          render={(props) => (
+            <CollectionPageWithSpinner
+              isLoading={!isCollectionsLoaded}
+              {...props}
+            />
+            // <CollectionPageWithSpinner isLoading={loading} {...props} />
+          )}
+        /> */}
+        {/* <Route
+          path={`${match.path}/:collectionId`}
+          component={CollectionPage}
+        /> */}
+      </div>
+    );
+  }
+}
+
+// const mapStateToProps = createStructuredSelector({
+//   //isCollectionFetching: selectIsCollectionFetching,
+//   isCollectionsLoaded: selectIsCollectionsLoaded,
+// });
+const mapDispatchToProps = (dispatch) => ({
+  fetchCollectionsAsync: () => dispatch(fetchCollectionsAsync()),
+});
+// const mapDispatchToProps = (dispatch) => ({
+//   updateCollections: (collectionsMap) =>
+//     dispatch(updateCollections(collectionsMap)),
+// });
+
+export default connect(null, mapDispatchToProps)(ShopPage);
