@@ -19,7 +19,9 @@ import CollectionPageContainer from "../collection/collection.container";
 // } from "../../firebase/firebase.utils";
 
 //import { updateCollections } from "../../redux/shop/shop.actions";
-import { fetchCollectionsAsync } from "../../redux/shop/shop.actions";
+// import { fetchCollectionsAsync } from "../../redux/shop/shop.actions";
+//saga
+import { fetchCollectionsStart } from "../../redux/shop/shop.actions";
 
 // import WithSpinner from "../../components/with-spinner/with-spinner.component";
 
@@ -40,8 +42,9 @@ class ShopPage extends React.Component {
 
   componentDidMount() {
     //Redux Thunk
-    const { fetchCollectionsAsync } = this.props;
-    fetchCollectionsAsync();
+    const { fetchCollectionsStart } = this.props;
+    fetchCollectionsStart();
+    //fetchCollectionsAsync();
     // const { updateCollections } = this.props;
     // const collectionRef = firestore.collection("collections");
     //rest API
@@ -96,7 +99,6 @@ class ShopPage extends React.Component {
         <Route
           path={`${match.path}/:collectionId`}
           component={CollectionPageContainer}
-          
         />
         {/* <Route
           path={`${match.path}/:collectionId`}
@@ -122,7 +124,9 @@ class ShopPage extends React.Component {
 //   isCollectionsLoaded: selectIsCollectionsLoaded,
 // });
 const mapDispatchToProps = (dispatch) => ({
-  fetchCollectionsAsync: () => dispatch(fetchCollectionsAsync()),
+  // fetchCollectionsAsync: () => dispatch(fetchCollectionsAsync()),
+  //saga
+  fetchCollectionsStart: () => dispatch(fetchCollectionsStart()),
 });
 // const mapDispatchToProps = (dispatch) => ({
 //   updateCollections: (collectionsMap) =>
