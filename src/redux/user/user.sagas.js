@@ -1,29 +1,71 @@
 import { takeLatest, put, all, call } from "redux-saga/effects";
 
 import UserActionTypes from "./user.types";
-import { googleSignInSuccess, googleSignInFailure } from "./user.actions";
+import { SignInSuccess, SignInFailure } from "./user.actions";
+// import {
+//   googleSignInSuccess,
+//   googleSignInFailure,
+//   emailSignInSuccess,
+//   emailSignInFailure,
+// } from "./user.actions";
 
 import {
   auth,
   googleProvider,
   createUserProfileDocument,
+  getCurrentUser,
 } from "../../firebase/firebase.utils";
 
 //we want actually access the vale that gets returend when the success happen
 //with our side and with pop up
+export function* getSnapshotFromUserAuth(userAuth) {
+  try {
+    const userRef = yield call(createUserProfileDocument, userAuth);
+    const userSnapshot = yield userRef.get();
+    yield put(SignInSuccess({ id: userSnapshot.id, ...userSnapshot.data() }));
+  } catch (error) {
+    yield put(SignInFailure(error));
+  }
+}
 export function* signInWithGoogle() {
   try {
     const { user } = yield auth.signInWithPopup(googleProvider);
-    console.log(user);
-    const userRef = yield call(createUserProfileDocument, user);
-    console.log(userRef);
-    const userSnapshot = yield userRef.get();
-    console.log('userSnapshot',userSnapshot);
-    yield put(
-      googleSignInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
-    );
+    yield getSnapshotFromUserAuth(user);
+    // const userRef = yield call(createUserProfileDocument, user);
+    // const userSnapshot = yield userRef.get();
+    // yield put(SignInSuccess({ id: userSnapshot.id, ...userSnapshot.data() }));
   } catch (error) {
-    yield put(googleSignInFailure(error));
+    yield put(SignInFailure(error));
+  }
+}
+
+export function* signInWithEmail({ payload: { email, password } }) {
+  try {
+    const { user } = yield auth.signInWithEmailAndPassword(email, password);
+    yield getSnapshotFromUserAuth(user);
+  } catch (error) {
+    yield put(SignInFailure(error));
+  }
+}
+// export function* signInWithEmail({ payload: { email, password } }) {
+//   try {
+//     const { user } = yield auth.signInWithEmailAndPassword(email, password);
+//     const userRef = yield call(createUserProfileDocument, user);
+//     const userSnapshot = yield userRef.get();
+//     yield put(
+//       emailSignInSuccess({ id: userSnapshot.id, ...userSnapshot.data() })
+//     );
+//   } catch (error) {
+//     yield put(emailSignInFailure(error));
+//   }
+// }
+export function* isUserAuthenticated() {
+  try {
+    const userAuth = yield getCurrentUser();
+    if (!userAuth) return;
+    yield getSnapshotFromUserAuth(userAuth);
+  } catch (error) {
+    put(SignInFailure(error));
   }
 }
 
@@ -31,6 +73,18 @@ export function* onGoogleSignInStart() {
   yield takeLatest(UserActionTypes.GOOGLE_SIGN_IN_START, signInWithGoogle);
 }
 
+export function* onEmailSignInStart() {
+  yield takeLatest(UserActionTypes.EMAIL_SIGN_IN_START, signInWithEmail);
+}
+
+export function* onCheckUserSession() {
+  yield takeLatest(UserActionTypes.CHECK_USER_SESSION, isUserAuthenticated);
+}
+
 export function* userSagas() {
-  yield all([call(onGoogleSignInStart)]);
+  yield all([
+    call(onGoogleSignInStart),
+    call(onEmailSignInStart),
+    call(onCheckUserSession),
+  ]);
 }
