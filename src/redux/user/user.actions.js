@@ -1,4 +1,4 @@
-import  UserActionTypes  from "./user.types";
+import UserActionTypes from "./user.types";
 
 // export const setCurrentUser = (user) => ({
 //   type: UserActionTypes.SET_CURRENT_USER,
@@ -32,7 +32,7 @@ export const SignInFailure = (error) => ({
 //Email
 export const emailSignInStart = (emailAndPassword) => ({
   type: UserActionTypes.EMAIL_SIGN_IN_START,
-  payload:emailAndPassword
+  payload: emailAndPassword,
 });
 
 // export const emailSignInSuccess = (user) => ({
@@ -45,7 +45,23 @@ export const emailSignInStart = (emailAndPassword) => ({
 //   payload: error,
 // });
 
-export const CheckUserSession=()=>({
-  type:UserActionTypes.CHECK_USER_SESSION
+export const CheckUserSession = () => ({
+  type: UserActionTypes.CHECK_USER_SESSION,
+});
 
-})
+export const signOutStart = () => {
+  return {
+    type: UserActionTypes.SIGN_OUT_START,
+  };
+};
+export const signOutSuccess = () => {
+  return {
+    type: UserActionTypes.SIGN_OUT_SUCCESS,
+  };
+};
+export const signOutFailure = (error) => {
+  return {
+    type: UserActionTypes.SIGN_OUT_FAILURE,
+    payload: error,
+  };
+};
