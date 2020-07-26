@@ -70,3 +70,5 @@ This section has moved here: https://facebook.github.io/create-react-app/docs/tr
 #Email and Password test:
 ala.ydyn@gmail.com
 password:123456
+
+https://help.heroku.com/sharing/ec789317-7040-4d11-9715-af574dd3fc80
